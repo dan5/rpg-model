@@ -3,125 +3,16 @@ require 'yaml'
 require 'sinatra'
 require 'sinatra/reloader' if development?
 
-def dice(n, t = 1)
-  Array.new(t) { rand(n) + 1 }.inject :+
-end
-
-class BasicModel
-  attr_reader :id
-
-  def initialize(id)
-    @id = id
-  end
-
-  def default_params(params)
-    params.each do |k, v|
-      value = v.respond_to?(:call) ? v.call : v
-      instance_variable_set "@#{k}", value
-      self.class.__send__ :attr_reader, k
-    end
-    @default_params = params
-  end
-
-  def data_name
-    "data/#{self.class.to_s.downcase}_#{@id or raise}"
-  end
-
-  def save
-    values = {}
-    @default_params.keys.each do |k|
-      values[k] = instance_variable_get "@#{k}"
-    end
-    File.write data_name, values.to_yaml
-    self
-  end
-
-  def load
-    data = _load
-    @default_params.keys.each do |k|
-      if value = data[k]
-        instance_variable_set("@#{k}", value)
-      end
-    end
-    self
-  end
-
-  def _load
-    YAML.load_file data_name
-  end
-
-  def self.load(id)
-    new(id).load
-  end
-end
-
-class User < BasicModel
-  attr_reader :units
-
-  def initialize(id)
-    super id
-    params = {
-      name: id,
-      gold: 100,
-    }
-    default_params params
-    init_units
-  end
-
-  def init_units
-    @units = {}
-    unit_ids.each do |unit_id|
-      @units[unit_id] = create_unit(unit_id)
-    end
-  end
-
-  def unit_ids
-    Dir.glob("data/unit_#{id}_*").map {|e| e.sub 'data/unit_', '' }
-  end
-
-  def create_unit(unit_id)
-    Unit.load unit_id
-  rescue Errno::ENOENT
-    Unit.new(unit_id).save
-  end
-end
-
-class Unit < BasicModel
-  attr_reader :skills
-
-  def initialize(id)
-    super id
-    params = {
-      name: -> { %w(アベル カイン シーダ ドーガ ジェイガン).sample },
-      lv: 1,
-      exp: 0,
-      abilities: -> { Array.new(6) { dice(6, 3) } },
-      str: rand(20) + 1,
-      slots: -> { Array.new(6) },
-    }
-    default_params params
-    @skills = %w(攻撃 回復 防御)
-  end
-
-  def set_slot(idx, skill_idx)
-    @slots[idx] = @skills[skill_idx]
-  end
-end
-
-def battle
-  logs = []
-  @units.each do |k, e|
-    logs << "#{k}: -#{e.slots.sample}-アクションを実行"
-  end
-  logs
-end
-
 enable :sessions
 
 helpers do
   def link_to(url, txt = url)
     %Q(<a href="#{url}">#{txt}</a>)   
   end
+end
+
+before do
+  load './model/rpg_model.rb'
 end
 
 before /^(?!.*login).+$/ do
