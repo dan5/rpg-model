@@ -17,11 +17,11 @@ end
 
 before /^(?!.*login).+$/ do
   if login = session[:login]
-    if false
+    begin
+      @user = User.load(login)
+    rescue Errno::ENOENT
       @user = User.new(login)
       @user.save
-    else
-      @user = User.load(login)
     end
     @units = @user.units
   else

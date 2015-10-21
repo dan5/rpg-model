@@ -15,7 +15,9 @@ class User < BasicModel
 
   def init_units
     @units = {}
-    unit_ids.each do |unit_id|
+    ids = unit_ids
+    ids = %w(1 2 3) if ids.empty?
+    ids.each do |unit_id|
       @units[unit_id] = create_unit(unit_id)
     end
   end
