@@ -42,6 +42,7 @@ class Unit < BasicModel
       name: -> { %w(アベル カイン シーダ ドーガ ジェイガン).sample },
       lv: 1,
       exp: 0,
+      hp: 10,
       abilities: -> { Array.new(6) { dice(6, 3) } },
       str: rand(20) + 1,
       slots: -> { Array.new(6) },
@@ -53,6 +54,25 @@ class Unit < BasicModel
   def set_slot(idx, skill_idx)
     @slots[idx] = @skills[skill_idx]
   end
+
+  class BattleUnit
+    def initialize(org)
+      %w(name lv hp abilities slots).each do |k|
+        instance_variable_set "@#{k}", org.__send__(k)
+        self.class.__send__ :attr_reader, k
+      end
+      @max_hp = @hp
+    end
+
+    def act
+      skill = slots.sample
+      skill
+    end
+  end
+
+  def battle_unit
+    BattleUnit.new self
+  end
 end
 
 def dice(n, t = 1)
@@ -61,8 +81,9 @@ end
 
 def battle
   logs = []
-  @units.each do |k, e|
-    logs << "#{k}: -#{e.slots.sample}-アクションを実行"
+  units = @units.values.map(&:battle_unit)
+  units.each do |u|
+    logs << "#{u.name}: -#{u.act}-アクションを実行"
   end
   logs
 end
