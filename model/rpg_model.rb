@@ -56,6 +56,33 @@ class Unit < BasicModel
   end
 
   class BattleUnit
+    class Skill
+      def initialize(name, unit)
+        @name = name || '硬直'
+        @unit = unit
+      end
+
+      def act
+        __send__ @name
+      end
+
+      def 攻撃
+        'attack'
+      end
+
+      def 回復
+        'heal'
+      end
+
+      def 防御
+        '身を守る'
+      end
+
+      def 硬直
+        'じっとしている'
+      end
+    end
+
     def initialize(org)
       %w(name lv hp abilities slots).each do |k|
         instance_variable_set "@#{k}", org.__send__(k)
@@ -65,8 +92,8 @@ class Unit < BasicModel
     end
 
     def act
-      skill = slots.sample
-      skill
+      skill = Skill.new(slots.sample, self)
+      skill.act
     end
   end
 
