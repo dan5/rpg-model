@@ -8,10 +8,6 @@ module Battle
       @logs = []
     end
 
-    def log(s)
-      @logs << s
-    end
-
     def act
       __send__ @name
     end
@@ -20,17 +16,15 @@ module Battle
       target = @unit.opp_units.sample
       d = dice(20)
       target.hp -= d
-      log "攻撃 » #{target.name} » ダメージ #{d}"
-      if target.dead?
-        log "#{target.name}を倒した"
-      end
+      log '攻撃', target.name, "ダメージ #{d}"
+      log "#{target.name}を倒した" if target.dead?
     end
 
     def 回復
       target = @unit.own_units.sample
       d = dice(6)
       target.hp += d
-      log "回復 » #{target.name} » 回復 #{d}"
+      log '回復', target.name, "回復 #{d}"
     end
 
     def 防御
@@ -39,6 +33,10 @@ module Battle
 
     def 硬直
       log 'じっとしている'
+    end
+
+    def log(*args)
+      @logs += args
     end
   end
 
@@ -92,22 +90,24 @@ module Battle
   
     def act
       logs = []
-      win_team_id = nil
-      100.times do
-        @units.flatten.each do |u|
-          next if u.dead?
-          u.act
-          logs << "#{u.name}: #{u.logs.join(' » ')}"
-          if u.opp_units.all?(&:dead?)
-            win_team_id = u.team_id
-            logs << "#{u.name}達は勝利した！"
-            break
-          end
-        end
-        break if win_team_id
-        logs << "--"
+      20.times do
+        _act(logs) and break
+        logs << '--'
       end
       logs
+    end
+
+    def _act(logs)
+      @units.flatten.each do |u|
+        u.alive? or next
+        u.act
+        logs << "#{u.name}: #{u.logs.join(' » ')}"
+        if u.opp_units.all?(&:dead?)
+          logs << "#{u.name}達は勝利した！"
+          return true
+        end
+      end
+      false
     end
   end
 
