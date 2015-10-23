@@ -5,6 +5,21 @@ require 'sinatra/reloader' if development?
 
 enable :sessions
 
+def master
+  {
+    trials: {
+      'ゴブリン討伐1' => {
+        name: 'ゴブリン討伐1',
+        text: '町からそう遠くない西の洞窟に近頃ゴブリンが住み始めたという。町の人々は治安を心配しゴブリンを退治してくれる冒険者を探している。',
+      },
+      'ゴブリン討伐2' => {
+        name: 'ゴブリン討伐2',
+        text: 'ゴブリン討伐2',
+      },
+    },
+  }
+end
+
 helpers do
   def link_to(url, txt = url)
     %Q(<a href="#{url}">#{txt}</a>)   
@@ -12,7 +27,7 @@ helpers do
 end
 
 before do
-  load './model/rpg_model.rb'
+  load './model/rpg_api.rb'
 end
 
 before /^(?!.*login).+$/ do
@@ -37,6 +52,22 @@ end
 get '/battle' do
   @logs = battle
   haml :battle
+end
+
+get '/trials' do
+  @trials = master[:trials].map {|name, e| Trial.new e }
+  haml :trials
+end
+
+get '/trials/:name' do
+  name = params[:name]
+  @trial = Trial.new(master[:trials][name])
+  haml :trials_show
+end
+
+get '/trials/:name/battle' do
+  trial_battle(params[:name])
+  haml :trials_battle
 end
 
 get '/units' do
@@ -78,18 +109,40 @@ __END__
       = @user.name
       GOLD: #{@user.gold}
     = link_to '/', 'home'
-    = link_to '/units', 'list'
+    = link_to '/units', 'units'
+    = link_to '/trials', 'trials'
     = '--'
 
 @@ index
 %p hello!!
 = link_to "/units"
+= link_to "/trials"
 = link_to "/battle"
 
 @@ battle
 - @logs.each do |e|
   = e
   %br
+
+@@ trials
+- @trials.each do |e|
+  = link_to "/trials/#{e.name}", e.name
+  %br
+
+@@ trials_show
+= @trial.name
+%br
+%p= @trial.text
+= link_to "/trials/#{@trial.name}/battle", '退治する'
+%br
+
+@@ trials_battle
+= @trial.name
+%br
+- @logs.each do |e|
+  = e
+  %br
+= link_to "/trials/#{@trial.name}", 'ok'
 
 @@ units_list
 - @units.each do |id, unit|
