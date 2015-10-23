@@ -56,8 +56,8 @@ class Unit < BasicModel
     @slots[idx] = @skills[skill_idx]
   end
 
-  def battle_unit
-    Battle::Unit.new self
+  def battle_unit(team_id)
+    Battle::Unit.new self, team_id
   end
 end
 
@@ -67,8 +67,8 @@ end
 
 def battle
   c = Battle::Controller.new [
-    @units.values.map(&:battle_unit),
-    @units.values.map(&:battle_unit) # todo
+    @units.values.map {|e| e.battle_unit 0 },
+    @units.values.map {|e| e.battle_unit 1 }.map.with_index {|e, i| e.name = "ゴブリン#{i + 1}" ; e }, # todo
   ]
   c.act
   c.logs
