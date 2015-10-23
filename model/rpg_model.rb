@@ -1,4 +1,5 @@
 load 'model/basic_model.rb'
+load 'model/battle/battle.rb'
 
 class User < BasicModel
   attr_reader :units
@@ -55,50 +56,8 @@ class Unit < BasicModel
     @slots[idx] = @skills[skill_idx]
   end
 
-  class BattleUnit
-    class Skill
-      def initialize(name, unit)
-        @name = name || '硬直'
-        @unit = unit
-      end
-
-      def act
-        __send__ @name
-      end
-
-      def 攻撃
-        'attack'
-      end
-
-      def 回復
-        'heal'
-      end
-
-      def 防御
-        '身を守る'
-      end
-
-      def 硬直
-        'じっとしている'
-      end
-    end
-
-    def initialize(org)
-      %w(name lv hp abilities slots).each do |k|
-        instance_variable_set "@#{k}", org.__send__(k)
-        self.class.__send__ :attr_reader, k
-      end
-      @max_hp = @hp
-    end
-
-    def act
-      skill = Skill.new(slots.sample, self)
-      skill.act
-    end
-  end
-
   def battle_unit
-    BattleUnit.new self
+    Battle::Unit.new self
   end
 end
 
@@ -107,10 +66,10 @@ def dice(n, t = 1)
 end
 
 def battle
-  logs = []
-  units = @units.values.map(&:battle_unit)
-  units.each do |u|
-    logs << "#{u.name}: -#{u.act}-アクションを実行"
-  end
-  logs
+  c = Battle::Controller.new [
+    @units.values.map(&:battle_unit),
+    @units.values.map(&:battle_unit) # todo
+  ]
+  c.act
+  c.logs
 end
