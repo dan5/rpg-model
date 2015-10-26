@@ -1,3 +1,5 @@
+require './lib/rpg_model/basic_model.rb'
+
 class RpgModel
   class User < BasicModel
     attr_reader :units
