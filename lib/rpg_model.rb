@@ -1,5 +1,7 @@
-load 'model/basic_model.rb'
-load 'model/battle/battle.rb'
+require 'yaml'
+
+load 'lib/basic_model.rb'
+load 'lib/battle/battle.rb'
 
 class Trial
   attr_reader :master, :name, :text
@@ -73,4 +75,23 @@ end
 
 def dice(n, t = 1)
   Array.new(t) { rand(n) + 1 }.inject :+
+end
+
+class RpgModel
+  attr_reader :user, :units
+
+  def initialize(login)
+    begin
+      @user = User.load(login)
+    rescue Errno::ENOENT
+      @user = User.new(login)
+      @user.save
+    end
+    @units = @user.units
+  end
+
+  # API
+  def unit_name(unit_id, name)
+    @units[unit_id].name = name
+  end
 end

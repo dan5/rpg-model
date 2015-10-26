@@ -9,7 +9,7 @@ class BasicModel
     params.each do |k, v|
       value = v.respond_to?(:call) ? v.call : v
       instance_variable_set "@#{k}", value
-      self.class.__send__ :attr_reader, k
+      self.class.__send__ :attr_accessor, k
     end
     @default_params = params
   end
