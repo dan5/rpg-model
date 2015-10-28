@@ -5,7 +5,7 @@ class RpgModel
     def initialize(id, manager)
       @id = id
       @manager = manager
-      @base_dir = self.class.base_dir
+      @dir_base = self.class.dir_base
     end
   
     def default_params(params)
@@ -18,19 +18,15 @@ class RpgModel
     end
   
     def data_name
-      "#{@base_dir}/#{self.class.to_s.downcase}_#{@id or raise}"
+      "#{@dir_base}/#{self.class.to_s.downcase}_#{@id or raise}"
     end
 
-    def data_id
-      @id
-    end
-  
     def save
       values = {}
       @default_params.keys.each do |k|
         values[k] = instance_variable_get "@#{k}"
       end
-      Dir.mkdir @base_dir unless File.exist?(@base_dir)
+      Dir.mkdir @dir_base unless File.exist?(@dir_base)
       File.write data_name, values.to_yaml
       self
     end
@@ -53,26 +49,26 @@ class RpgModel
       new(id, manager).load
     end
 
-    def self.all
-      {}
-    end
-
-    @@base_dir = nil
+    @@dir_scope = nil
 
     def scope
-      @@base_dir = id
+      @@dir_scope = id
       r = yield
-      @@base_dir = nil
+      @@dir_scope = nil
       r
     end
 
-    def self.base_dir
-      @@base_dir ? "data/#{@@base_dir}" : 'data'
+    def self.dir_base
+      @@dir_scope ? 'data/' + @@dir_scope : 'data'
     end
 
     def self.ids
-      ptn = "#{self.base_dir}/#{self.to_s.downcase}_"
+      ptn = "#{self.dir_base}/#{self.to_s.downcase}_"
       Dir.glob(ptn + '*').map {|e| e.sub ptn, '' }
+    end
+
+    def self.all
+      {}
     end
   end
 end
