@@ -6,9 +6,6 @@ load './lib/rpg_model/unit.rb'
 load './lib/rpg_model/battle.rb'
 
 class RpgModel
-  class Result < OpenStruct
-  end
-
   class NewUnit < Unit
   end
 
@@ -23,15 +20,17 @@ class RpgModel
   end
 
   class Manager
-    attr_reader :user
+    attr_reader :master, :user
 
     def initialize(master, login)
-      @user =
-        begin
-          User.load(login, self)
-        rescue Errno::ENOENT
-          User.new(login, self).save
-        end
+      @master = master
+      @user = create_user(login)
+    end
+
+    def create_user(login)
+      User.load(login, self)
+    rescue Errno::ENOENT
+      User.new(login, self).save
     end
 
     #def init_new_units
@@ -41,10 +40,14 @@ class RpgModel
   end
 
   class Api
-    attr_reader :user
+    class Result < OpenStruct
+    end
+
+    attr_reader :master, :user
 
     def initialize(manager)
       @manager = manager
+      @master = manager.master
       @user = manager.user
     end
 
