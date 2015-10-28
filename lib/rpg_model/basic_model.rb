@@ -32,7 +32,7 @@ class RpgModel
     end
   
     def load
-      data = _load
+      data = load_yaml
       @default_params.keys.each do |k|
         if value = data[k]
           instance_variable_set("@#{k}", value)
@@ -41,7 +41,7 @@ class RpgModel
       self
     end
   
-    def _load
+    def load_yaml
       YAML.load_file data_name
     end
   
