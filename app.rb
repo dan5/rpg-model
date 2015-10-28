@@ -9,20 +9,19 @@ helpers do
   def link_to(url, txt = url)
     %Q(<a href="#{url}">#{txt}</a>)   
   end
+
+  def api() @api end
 end
 
 before do
-  load './model/rpg_api.rb'
+  load './lib/rpg_model.rb'
+  load './master/master.rb'
 end
 
 before /^(?!.*login).+$/ do
   if login = session[:login]
-    begin
-      @user = User.load(login)
-    rescue Errno::ENOENT
-      @user = User.new(login)
-      @user.save
-    end
+    @api = RpgModel.new(master, 'testman').api
+    @user = api.user
     @units = @user.units
   else
     redirect to '/login'
@@ -46,7 +45,7 @@ end
 
 get '/trials/:name' do
   name = params[:name]
-  @trial = Trial.new(master[:trials][name])
+  @trial = RpgModel::Trial.new(master[:trials][name])
   haml :trials_show
 end
 
@@ -72,8 +71,7 @@ end
 
 get '/units/:id/slots/:slot_idx/set/:skill_idx' do
   @unit = @units[params[:id]]
-  @unit.set_slot params[:slot_idx].to_i, params[:skill_idx].to_i
-  @unit.save
+  api.unit_slot_set @unit.id, params[:slot_idx].to_i, params[:skill_idx].to_i
   redirect to "/units/#{@unit.id}"
 end
 

@@ -4,8 +4,8 @@ class RpgModel
   class Unit < BasicModel
     attr_reader :skills
 
-    def initialize(id)
-      super id
+    def initialize(id, manager)
+      super id, manager
       params = {
         name: -> { %w(アベル カイン シーダ ドーガ ジェイガン).sample },
         lv: 1,
