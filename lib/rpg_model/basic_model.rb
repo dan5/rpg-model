@@ -68,6 +68,12 @@ class RpgModel
     end
 
     @@dir_scope = nil
+    @@dir_base = 'data'
+
+    def self.dir_base=(dir)
+      Dir.mkdir dir unless File.exist?(dir)
+      @@dir_base = dir
+    end
 
     def scope
       @@dir_scope = id
@@ -77,7 +83,7 @@ class RpgModel
     end
 
     def self.dir_base
-      @@dir_scope ? 'data/' + @@dir_scope : 'data'
+      @@dir_scope ? @@dir_base + '/' + @@dir_scope : @@dir_base
     end
   end
 end

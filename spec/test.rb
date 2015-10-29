@@ -1,53 +1,86 @@
+require 'fileutils'
 require './lib/rpg_model.rb'
-load 'master/master.rb'
+require './master/master.rb'
 
-describe 'rpg-model' do
-  api = RpgModel.new(master, 'testman').api
-  user = api.user
-  unit = user.units.values.first
+describe do
+  attr_reader :api, :user
 
-  api.unit_name unit.id, 'new name'
-  it { expect(unit.name).to eq 'new name' }
-
-  trial_name = master[:trials].keys.first
-  it 'trial_battle' do
-    r = api.trial_battle(trial_name)
-    expect(r.status).to eq :ok
+  before do
+    FileUtils.rm_rf('data.spec')
+    RpgModel::User.dir_base = 'data.spec'
   end
-end
 
-describe 'ゲーム基本フロー' do
-  api = RpgModel.new(master, 'testman').api
-  user = api.user
-  unit = user.units.values.first
-  #new_unit = user.new_units.first
-
-  api.unit_slot_set unit.id, 0, 0
-
-  it 'api.unit_recruit' do
-    nn = user.new_units.size
+  before do
+    @api = RpgModel.new(master, 'testman').api
+    @user = api.user
     api.unit_recruit
-    expect(user.new_units.size).to eq nn + 3
+  end
+  
+  describe 'api.trial_battle' do
+    before do
+      trial_name = master[:trials].keys.first
+      @r = api.trial_battle(trial_name)
+    end
+
+    it do
+      expect(@r.status).to eq :ok
+    end
+  end
+  
+  describe 'api.unit_name' do
+    before do
+      @unit = user.units.values.first
+      api.unit_name @unit.id, 'new name'
+    end
+
+    it do
+      expect(@unit.name).to eq 'new name'
+    end
   end
 
-  it 'api.unit_join' do
-    nn = user.new_units.size
-    un = user.units.size
-    api.unit_join user.new_units.values.first.id
-    expect(user.new_units.size).to eq nn - 1
-    expect(user.units.size).to eq un + 1
+  describe 'api.unit_slot_set' do
+    before do
+      @unit = user.units.values.first
+      api.unit_slot_set @unit.id, 0, 0
+    end
+
+    it do
+      expect(@unit.slots.first).to eq @unit.skills.first
+    end
   end
 
-  it 'api.unit_remove' do
-    un = user.units.size
-    api.unit_remove user.units.values.first.id
-    expect(user.units.size).to eq un - 1
+  describe 'api.unit_recruit' do
+    before do
+      @nn = user.new_units.size
+      api.unit_recruit
+    end
+  
+    it do
+      expect(user.new_units.size).to eq @nn + 3
+    end
+  end
+  
+  describe 'api.unit_join' do
+    before do
+      @nn = user.new_units.size
+      @un = user.units.size
+      api.unit_join user.new_units.values.first.id
+    end
+
+    it do
+      expect(user.new_units.size).to eq @nn - 1
+      expect(user.units.size).to eq @un + 1
+    end
   end
 
-  it 'delete all units' do
-    user.new_units.each {|id, u| api.unit_join u.id }
-    user.units.each {|id, u| api.unit_remove u.id }
-    expect(user.new_units.size).to eq 0
-    expect(user.units.size).to eq 0
+  describe 'api.unit_remove' do
+    before do
+      @un = user.units.size
+      api.unit_remove user.units.values.first.id
+    end
+
+    it do
+      expect(user.units.size).to eq @un - 1
+    end
   end
 end
