@@ -44,14 +44,10 @@ describe 'ゲーム基本フロー' do
     expect(user.units.size).to eq un - 1
   end
 
-  it {
-    user.new_units.each do |id, u|
-      api.unit_join u.id
-    end
-    user.units.each do |id, u|
-      api.unit_remove u.id
-    end
+  it 'delete all units' do
+    user.new_units.each {|id, u| api.unit_join u.id }
+    user.units.each {|id, u| api.unit_remove u.id }
     expect(user.new_units.size).to eq 0
     expect(user.units.size).to eq 0
-  }
+  end
 end

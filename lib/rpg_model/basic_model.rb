@@ -22,7 +22,6 @@ class RpgModel
     end
 
     def destroy
-      p data_name
       File.delete data_name
     end
 
