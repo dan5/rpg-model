@@ -1,4 +1,10 @@
 
+task :default => [:spec]
+
+task :spec do
+  sh 'bundle exec rspec spec/test.rb'
+end
+
 task :api do
   sh %Q!wget --post-data='name=testman&foo=hello' http://localhost:3003/ -O - | cat!
 end
