@@ -1,10 +1,10 @@
 require 'yaml'
 require 'ostruct'
 
-load './lib/rpg_model/user.rb'
-load './lib/rpg_model/unit.rb'
-load './lib/rpg_model/api.rb'
-load './lib/rpg_model/battle.rb'
+require './lib/rpg_model/user.rb'
+require './lib/rpg_model/unit.rb'
+require './lib/rpg_model/api.rb'
+require './lib/rpg_model/battle.rb'
 
 class RpgModel
   class NewUnit < Unit

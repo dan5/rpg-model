@@ -1,7 +1,9 @@
 require 'haml'
 require 'yaml'
 require 'sinatra'
-require 'sinatra/reloader' if development?
+
+require './lib/rpg_model.rb'
+require './master/master.rb'
 
 enable :sessions
 
@@ -11,11 +13,6 @@ helpers do
   end
 
   def api() @api end
-end
-
-before do
-  load './lib/rpg_model.rb'
-  load './master/master.rb'
 end
 
 before /^(?!.*login).+$/ do
