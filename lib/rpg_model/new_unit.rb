@@ -1,4 +1,4 @@
-class RpgModel
+module RpgModel
   class NewUnit < Unit
   end
 end

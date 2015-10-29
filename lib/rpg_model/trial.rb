@@ -1,4 +1,4 @@
-class RpgModel
+module RpgModel
   class Trial
     attr_reader :master, :name, :text
   

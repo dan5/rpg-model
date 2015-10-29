@@ -1,4 +1,4 @@
-class RpgModel
+module RpgModel
   class Api
     class Result < OpenStruct
     end

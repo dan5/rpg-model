@@ -1,6 +1,6 @@
 require './lib/rpg_model/basic_model.rb'
 
-class RpgModel
+module RpgModel
   class Unit < BasicModel
     attr_reader :skills
 

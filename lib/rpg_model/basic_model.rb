@@ -1,4 +1,4 @@
-class RpgModel
+module RpgModel
   class BasicModel
     attr_reader :id
 

@@ -3,7 +3,7 @@ require './lib/rpg_model/unit.rb'
 require './lib/rpg_model/new_unit.rb'
 require './lib/rpg_model/trial.rb'
 
-class RpgModel
+module RpgModel
   class Manager
     attr_reader :master, :user
 
