@@ -29,6 +29,7 @@ describe 'ゲーム基本フロー' do
     api.unit_recruit
     expect(user.new_units.size).to eq nn + 3
   end
+
   it 'api.unit_join' do
     nn = user.new_units.size
     un = user.units.size
@@ -36,9 +37,21 @@ describe 'ゲーム基本フロー' do
     expect(user.new_units.size).to eq nn - 1
     expect(user.units.size).to eq un + 1
   end
+
   it 'api.unit_remove' do
     un = user.units.size
     api.unit_remove user.units.values.first.id
     expect(user.units.size).to eq un - 1
   end
+
+  it {
+    user.new_units.each do |id, u|
+      api.unit_join u.id
+    end
+    user.units.each do |id, u|
+      api.unit_remove u.id
+    end
+    expect(user.new_units.size).to eq 0
+    expect(user.units.size).to eq 0
+  }
 end

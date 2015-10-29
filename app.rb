@@ -69,10 +69,20 @@ get '/units/:id/slots/:slot_idx' do
   haml :units_slots
 end
 
-get '/units/:id/slots/:slot_idx/set/:skill_idx' do
-  @unit = @units[params[:id]]
-  api.unit_slot_set @unit.id, params[:slot_idx].to_i, params[:skill_idx].to_i
-  redirect to "/units/#{@unit.id}"
+get '/api.unit_slot_set/:id/:slot_idx/:skill_idx' do
+  id = params[:id]
+  api.unit_slot_set id, params[:slot_idx].to_i, params[:skill_idx].to_i
+  redirect to "/units/#{id}"
+end
+
+get '/api.unit_recruit' do
+  api.unit_recruit
+  redirect to '/'
+end
+
+get '/api.unit_join/:id' do
+  api.unit_join params[:id]
+  redirect to '/'
 end
 
 get '/' do
@@ -94,7 +104,12 @@ __END__
     = link_to '/', 'home'
     = link_to '/units', 'units'
     = link_to '/trials', 'trials'
+    = link_to '/api.unit_recruit', 'recruit'
     = '--'
+
+  - @user.new_units.each do |id, u|
+    = link_to "/api.unit_join/#{id}", u.name
+    %br
 
 @@ index
 %p hello!!
@@ -149,5 +164,5 @@ __END__
 %br
 %p #{@unit.name}の slots ##{@slot_idx}
 - @unit.skills.each.with_index do |slot, i|
-  = link_to "/units/#{@unit.id}/slots/#{@slot_idx}/set/#{i}", slot
+  = link_to "/api.unit_slot_set/#{@unit.id}/#{@slot_idx}/#{i}", slot
   %br
