@@ -21,6 +21,11 @@ class RpgModel
       u.save
     end
 
+    def unit_remove(unit_id)
+      u = user.units[unit_id]
+      user.delete_unit u.id
+    end
+
     def unit_recruit
       3.times { user.create_new_unit }
     end
@@ -29,11 +34,6 @@ class RpgModel
       n = user.new_units[new_unit_id]
       user.create_unit# todo: n
       user.delete_new_unit n.id
-    end
-
-    def unit_remove(unit_id)
-      u = user.units[unit_id]
-      user.delete_unit u.id
     end
 
     # test: trial_battle(trial_name)

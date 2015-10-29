@@ -13,9 +13,30 @@ describe do
   before do
     @api = RpgModel.new(master, 'testman').api
     @user = api.user
-    api.unit_recruit
   end
   
+  describe 'api.user' do
+    it do
+      expect(user.name).to eq 'testman'
+      expect(user.units.size).to eq 3
+      expect(user.new_units.size).to eq 0
+    end
+  end
+
+  describe 'unit' do
+    attr_reader :unit
+
+    before do
+      @unit = user.units.values.first
+    end
+
+    it do
+      expect(unit.name).to be_kind_of String
+      expect(unit.slots).to be_kind_of Array
+      expect(unit.skills).to be_kind_of Array
+    end
+  end
+
   describe 'api.trial_battle' do
     before do
       trial_name = master[:trials].keys.first
@@ -49,30 +70,6 @@ describe do
     end
   end
 
-  describe 'api.unit_recruit' do
-    before do
-      @nn = user.new_units.size
-      api.unit_recruit
-    end
-  
-    it do
-      expect(user.new_units.size).to eq @nn + 3
-    end
-  end
-  
-  describe 'api.unit_join' do
-    before do
-      @nn = user.new_units.size
-      @un = user.units.size
-      api.unit_join user.new_units.values.first.id
-    end
-
-    it do
-      expect(user.new_units.size).to eq @nn - 1
-      expect(user.units.size).to eq @un + 1
-    end
-  end
-
   describe 'api.unit_remove' do
     before do
       @un = user.units.size
@@ -81,6 +78,30 @@ describe do
 
     it do
       expect(user.units.size).to eq @un - 1
+    end
+  end
+
+  describe 'api.unit_recruit' do
+    before do
+      @nn = user.new_units.size
+      api.unit_recruit
+    end
+
+    it do
+      expect(user.new_units.size).to eq @nn + 3
+    end
+
+    describe 'api.unit_join' do
+      before do
+        @nn = user.new_units.size
+        @un = user.units.size
+        api.unit_join user.new_units.values.first.id
+      end
+
+      it do
+        expect(user.new_units.size).to eq @nn - 1
+        expect(user.units.size).to eq @un + 1
+      end
     end
   end
 end
