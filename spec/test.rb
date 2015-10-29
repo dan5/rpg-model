@@ -11,7 +11,7 @@ describe do
   end
 
   before do
-    @api = RpgModel.new(master, 'testman').api
+    @api = RpgModel::Api.new(master, 'testman')
     @user = api.user
   end
   

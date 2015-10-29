@@ -17,7 +17,7 @@ end
 
 before /^(?!.*login).+$/ do
   if login = session[:login]
-    @api = RpgModel.new(master, 'testman').api
+    @api = RpgModel::Api.new(master, 'testman')
     @user = api.user
     @units = @user.units
   else

@@ -5,10 +5,10 @@ class RpgModel
 
     attr_reader :master, :user
 
-    def initialize(manager)
-      @manager = manager
-      @master = manager.master
-      @user = manager.user
+    def initialize(master, login)
+      @master = master
+      @manager = Manager.new(master, login)
+      @user = @manager.user
     end
 
     def unit_name(unit_id, name)
