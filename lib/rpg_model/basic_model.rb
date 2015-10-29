@@ -58,6 +58,15 @@ class RpgModel
       new(id, manager).save
     end
 
+    def self.ids
+      ptn = "#{self.dir_base}/#{self.to_s.downcase}_"
+      Dir.glob(ptn + '*').map {|e| e.sub ptn, '' }
+    end
+
+    def self.all(manager)
+      self.ids.inject({}) {|h, id| h[id] = self.load(id, manager); h }
+    end
+
     @@dir_scope = nil
 
     def scope
@@ -69,15 +78,6 @@ class RpgModel
 
     def self.dir_base
       @@dir_scope ? 'data/' + @@dir_scope : 'data'
-    end
-
-    def self.ids
-      ptn = "#{self.dir_base}/#{self.to_s.downcase}_"
-      Dir.glob(ptn + '*').map {|e| e.sub ptn, '' }
-    end
-
-    def self.all(manager)
-      self.ids.inject({}) {|h, id| h[id] = self.load(id, manager); h }
     end
   end
 end
