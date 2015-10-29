@@ -31,6 +31,11 @@ class RpgModel
       user.delete_new_unit new_unit.id
     end
 
+    def unit_remove(unit_id)
+      u = user.units[unit_id]
+      user.delete_unit u.id
+    end
+
     # test: trial_battle(trial_name)
     def trial_battle(name)
       @trial = Trial.new(master[:trials][name]) # todo: 毎回生成で良い？

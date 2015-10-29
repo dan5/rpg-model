@@ -15,6 +15,21 @@ class RpgModel
       init_new_units
     end
 
+    def init_units
+      @units = scope { Unit.all @manager }
+      3.times { create_unit } if @units.empty?
+    end
+
+    def create_unit
+      u = scope { Unit.create @manager }
+      @units[u.id] = u
+    end
+
+    def delete_unit(unit_id)
+      @units[unit_id].destroy
+      @units.delete unit_id
+    end
+
     def init_new_units
       @new_units = scope { NewUnit.all @manager }
     end
@@ -28,16 +43,6 @@ class RpgModel
       u = @new_units[new_unit_id]
       u.destroy
       @new_units.delete u.id
-    end
-
-    def init_units
-      @units = scope { Unit.all @manager }
-      3.times { create_unit } if @units.empty?
-    end
-
-    def create_unit
-      u = scope { Unit.create @manager }
-      @units[u.id] = u
     end
   end
 end

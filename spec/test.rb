@@ -24,16 +24,21 @@ describe 'ゲーム基本フロー' do
 
   api.unit_slot_set unit.id, 0, 0
 
-  it {
+  it 'api.unit_recruit' do
     nn = user.new_units.size
     api.unit_recruit
     expect(user.new_units.size).to eq nn + 3
-  }
-  it {
+  end
+  it 'api.unit_join' do
     nn = user.new_units.size
     un = user.units.size
     api.unit_join user.new_units.values.first.id
     expect(user.new_units.size).to eq nn - 1
     expect(user.units.size).to eq un + 1
-  }
+  end
+  it 'api.unit_remove' do
+    un = user.units.size
+    api.unit_remove user.units.values.first.id
+    expect(user.units.size).to eq un - 1
+  end
 end
