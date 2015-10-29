@@ -36,10 +36,9 @@ module RpgModel
       user.delete_new_unit n.id
     end
 
-    # test: trial_battle(trial_name)
     def trial_battle(name)
-      @trial = Trial.new(master[:trials][name]) # todo: 毎回生成で良い？
-      Result.new status: :ok, logs: battle
+      trial = Trial.new(master[:trials][name]) # todo: 毎回生成で良い？
+      Result.new status: :ok, logs: battle, trial: trial
     end
 
     # local methods --

@@ -36,7 +36,7 @@ get '/battle' do
 end
 
 get '/trials' do
-  @trials = master[:trials].map {|name, e| Trial.new e }
+  @trials = master[:trials].map {|name, e| RpgModel::Trial.new e }
   haml :trials
 end
 
@@ -47,7 +47,9 @@ get '/trials/:name' do
 end
 
 get '/trials/:name/battle' do
-  trial_battle(params[:name])
+  r = api.trial_battle(params[:name])
+  @trial = r.trial
+  @logs = r.logs
   haml :trials_battle
 end
 
