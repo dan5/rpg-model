@@ -20,23 +20,24 @@ class RpgModel
     end
 
     def create_new_unit
-      unit_id = ((scope { NewUnit.ids }.map(&:to_i).max or 0) + 1).to_s
-      @new_units[unit_id] = scope { NewUnit.new(unit_id, self).save }
+      u = scope { NewUnit.create @manager }
+      @new_units[u.id] = u
+    end
+
+    def delete_new_unit(new_unit_id)
+      u = @new_units[new_unit_id]
+      u.destroy
+      @new_units.delete u.id
     end
 
     def init_units
-      @units = {}
-      ids = scope { Unit.ids }
-      ids = %w(1 2 3) if ids.empty?
-      ids.each do |unit_id|
-        @units[unit_id] = create_unit(unit_id)
-      end
+      @units = scope { Unit.all @manager }
+      3.times { create_unit } if @units.empty?
     end
 
-    def create_unit(unit_id)
-      scope { Unit.load unit_id, self }
-    rescue Errno::ENOENT
-      scope { Unit.new(unit_id, self).save }
+    def create_unit
+      u = scope { Unit.create @manager }
+      @units[u.id] = u
     end
   end
 end

@@ -1,13 +1,13 @@
 class RpgModel
   class BasicModel
     attr_reader :id
-  
+
     def initialize(id, manager)
       @id = id
       @manager = manager
       @dir_base = self.class.dir_base
     end
-  
+
     def default_params(params)
       params.each do |k, v|
         value = v.respond_to?(:call) ? v.call : v
@@ -16,9 +16,13 @@ class RpgModel
       end
       @default_params = params
     end
-  
+
     def data_name
       "#{@dir_base}/#{self.class.to_s.downcase}_#{@id or raise}"
+    end
+
+    def destroy
+      File.delete data_name
     end
 
     def save
@@ -30,7 +34,7 @@ class RpgModel
       File.write data_name, values.to_yaml
       self
     end
-  
+
     def load
       data = load_yaml
       @default_params.keys.each do |k|
@@ -40,13 +44,18 @@ class RpgModel
       end
       self
     end
-  
+
     def load_yaml
       YAML.load_file data_name
     end
-  
+
     def self.load(id, manager)
       new(id, manager).load
+    end
+
+    def self.create(manager)
+      id = ((self.ids.map(&:to_i).max or 0) + 1).to_s
+      new(id, manager).save
     end
 
     @@dir_scope = nil

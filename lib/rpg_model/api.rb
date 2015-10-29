@@ -25,6 +25,12 @@ class RpgModel
       3.times { user.create_new_unit }
     end
 
+    def unit_join(new_unit_id)
+      new_unit = user.new_units[new_unit_id]
+      user.create_unit# todo: new_unit
+      user.delete_new_unit new_unit.id
+    end
+
     # test: trial_battle(trial_name)
     def trial_battle(name)
       @trial = Trial.new(master[:trials][name]) # todo: 毎回生成で良い？
