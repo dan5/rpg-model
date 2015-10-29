@@ -2,8 +2,8 @@ require 'yaml'
 require 'ostruct'
 
 require './lib/rpg_model/manager.rb'
-require './lib/rpg_model/api.rb'
 require './lib/rpg_model/battle.rb'
+require './lib/api/api.rb'
 
 class RpgModel
   attr_reader :api
