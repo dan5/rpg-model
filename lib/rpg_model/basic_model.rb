@@ -76,7 +76,7 @@ module RpgModel
     end
 
     def scope
-      @@dir_scope = id
+      @@dir_scope = "#{self.class.to_s.downcase}_#{id}_scope"
       r = yield
       @@dir_scope = nil
       r
