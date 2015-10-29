@@ -67,8 +67,8 @@ class RpgModel
       Dir.glob(ptn + '*').map {|e| e.sub ptn, '' }
     end
 
-    def self.all
-      {}
+    def self.all(manager)
+      self.ids.inject({}) {|h, id| h[id] = self.load(id, manager); h }
     end
   end
 end

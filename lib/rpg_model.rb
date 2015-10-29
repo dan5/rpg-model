@@ -33,10 +33,6 @@ class RpgModel
     rescue Errno::ENOENT
       User.new(login, self).save
     end
-
-    #def init_new_units
-    #  @new_units = NewUnit.all
-    #end
   end
 
   attr_reader :api

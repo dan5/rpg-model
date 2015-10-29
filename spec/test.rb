@@ -23,4 +23,8 @@ describe 'ゲーム基本フロー' do
   #new_unit = user.new_units.first
 
   api.unit_slot_set unit.id, 0, 0
+
+  n = user.new_units.size
+  api.unit_recruit
+  it { expect(user.new_units.size).to eq n + 3 }
 end

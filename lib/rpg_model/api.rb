@@ -21,6 +21,10 @@ class RpgModel
       unit.save
     end
 
+    def unit_recruit
+      3.times { user.create_new_unit }
+    end
+
     # test: trial_battle(trial_name)
     def trial_battle(name)
       @trial = Trial.new(master[:trials][name]) # todo: 毎回生成で良い？
