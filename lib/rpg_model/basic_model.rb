@@ -54,7 +54,9 @@ module RpgModel
     end
 
     def self.create(manager)
-      id = ((self.ids.map(&:to_i).max or 0) + 1).to_s
+      ids = self.ids
+      ids.any? {|e| e[/[^0-9]/] and raise("id `#{e}' shuld be a number!") }
+      id = ((ids.map(&:to_i).max or 0) + 1).to_s
       new(id, manager).save
     end
 
