@@ -16,9 +16,9 @@ class RpgModel
     end
 
     def unit_slot_set(unit_id, slot_idx, skill_idx)
-      unit = user.units[unit_id]
-      unit.set_slot slot_idx, skill_idx
-      unit.save
+      u = user.units[unit_id]
+      u.set_slot slot_idx, skill_idx
+      u.save
     end
 
     def unit_recruit
@@ -26,9 +26,9 @@ class RpgModel
     end
 
     def unit_join(new_unit_id)
-      new_unit = user.new_units[new_unit_id]
-      user.create_unit# todo: new_unit
-      user.delete_new_unit new_unit.id
+      n = user.new_units[new_unit_id]
+      user.create_unit# todo: n
+      user.delete_new_unit n.id
     end
 
     def unit_remove(unit_id)
@@ -43,6 +43,7 @@ class RpgModel
     end
 
     # local methods --
+
     def battle
       c = Battle::Controller.new [
         user.units.values.map {|e| e.battle_unit 0 },

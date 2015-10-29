@@ -40,9 +40,8 @@ class RpgModel
     end
 
     def delete_new_unit(new_unit_id)
-      u = @new_units[new_unit_id]
-      u.destroy
-      @new_units.delete u.id
+      @new_units[new_unit_id]
+      @new_units.delete new_unit_id
     end
   end
 end
