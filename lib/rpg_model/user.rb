@@ -9,6 +9,7 @@ module RpgModel
       params = {
         name: id,
         gold: 100 + dice(100),
+        trials: [],
       }
       default_params params
       init_units
@@ -42,6 +43,10 @@ module RpgModel
     def delete_new_unit(new_unit_id)
       @new_units[new_unit_id].destroy
       @new_units.delete new_unit_id
+    end
+
+    def trial_finish(trial_name)
+      @trials << trial_name
     end
   end
 end

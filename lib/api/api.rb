@@ -38,7 +38,10 @@ module RpgModel
 
     def trial_battle(name)
       trial = Trial.new(master[:trials][name]) # todo: 毎回生成で良い？
-      Result.new status: :ok, logs: battle, trial: trial
+      r = Result.new(status: :ok, logs: battle, trial: trial)
+      user.trial_finish name if true
+      user.save
+      r
     end
 
     # local methods --
