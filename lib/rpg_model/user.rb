@@ -18,11 +18,14 @@ module RpgModel
 
     def init_units
       @units = scope { Unit.all @manager }
-      3.times { create_unit } if @units.empty?
+      13.times { create_unit } if @units.empty?
     end
 
     def create_unit
       u = scope { Unit.create @manager }
+      u.order_index = @units.size + 1
+      u.position_index = @units.size + 1
+      u.save
       @units[u.id] = u
     end
 

@@ -36,6 +36,25 @@ module RpgModel
       user.delete_new_unit n.id
     end
 
+    def unit_swap_order(id0, id1)
+      a = user.units[id0]
+      b = user.units[id1]
+      a.order_index, b.order_index = b.order_index, a.order_index
+      if (a.order_index <= 9 and b.order_index > 9) or (b.order_index <= 9 and a.order_index > 9)
+        a.position_index, b.position_index = b.position_index, a.position_index
+      end
+      a.save
+      b.save
+    end
+
+    def unit_swap_position(id0, id1)
+      a = user.units[id0]
+      b = user.units[id1]
+      a.position_index, b.position_index = b.position_index, a.position_index
+      a.save
+      b.save
+    end
+
     def trial_battle(name)
       trial = Trial.new(master[:trials][name]) # todo: 毎回生成で良い？
       r = Result.new(status: :ok, logs: battle, trial: trial)

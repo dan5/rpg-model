@@ -1,6 +1,7 @@
 require 'haml'
 require 'yaml'
 require 'sinatra'
+require 'sinatra/reloader' if development?
 
 require './lib/rpg_model.rb'
 require './master/master.rb'
@@ -13,6 +14,12 @@ helpers do
   end
 
   def api() @api end
+end
+
+if development?
+  before do
+    Dir.glob('./lib/**/*.rb').each {|e| load e }
+  end
 end
 
 before /^(?!.*login).+$/ do
@@ -84,6 +91,26 @@ get '/api.unit_join/:id' do
   redirect to '/'
 end
 
+get '/api.unit_swap_order/:unit_id' do
+  if session[:swap_unit_id]
+    api.unit_swap_order session[:swap_unit_id], params[:unit_id]
+    session.delete :swap_unit_id
+  else
+    session[:swap_unit_id] = params[:unit_id]
+  end
+  redirect to '/units'
+end
+
+get '/api.unit_swap_position/:unit_id' do
+  if session[:swap_position_unit_id]
+    api.unit_swap_position session[:swap_position_unit_id], params[:unit_id]
+    session.delete :swap_position_unit_id
+  else
+    session[:swap_position_unit_id] = params[:unit_id]
+  end
+  redirect to '/units'
+end
+
 get '/' do
   haml :index
 end
@@ -142,11 +169,38 @@ __END__
 = link_to "/trials/#{@trial.name}", 'ok'
 
 @@ units_list
-- @units.each do |id, unit|
-  = link_to "/units/#{id}", unit.name
-  lv:#{unit.lv}
-  exp:#{unit.exp}
-  %br
+- if session[:swap_unit_id]
+  %p unit:#{session[:swap_unit_id]}と打順を入れ替える相手（番号）を選んでください
+- position_names = %w(- 投 捕 一 二 三 遊 外 外 外)
+%table
+  %tr
+    %th 打順
+    %th 守備
+    %th name
+    %th 守備
+    %th 打撃
+    %th パワー
+    %th 走
+    %th 肩
+    %th 守
+    %th 魅
+  %tr
+    %th
+  - @units.values.sort_by(&:order_index).each do |unit|
+    - if unit.order_index == 10
+      %tr
+        %td
+          %hr
+    %tr
+      %td=link_to "api.unit_swap_order/#{unit.id}", "##{unit.order_index}"
+      %td=link_to "api.unit_swap_position/#{unit.id}", position_names[unit.position_index]
+      %td=link_to "/units/#{unit.id}", unit.name
+      %td= position_names[unit.position]
+      %td= unit.atk
+      %td= unit.power
+      - unit.abilities.each do |e|
+        - grades = %w(G F E D C B A S)
+        %td= grades[e]
 
 @@ units_show
 = @unit.name

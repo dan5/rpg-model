@@ -4,14 +4,17 @@ module RpgModel
   class Unit < BasicModel
     attr_reader :skills
 
+    # 打撃 パワー 走 守 肩 魅
     def initialize(id, manager)
       super id, manager
       params = {
-        name: -> { %w(アベル カイン シーダ ドーガ ジェイガン).sample },
-        lv: 1,
-        exp: 0,
-        hp: 10,
-        abilities: -> { Array.new(6) { dice(6, 3) } },
+        name: -> { name_sample },
+        atk: dice(220, 2),
+        power: rand(40),
+        abilities: -> { Array.new(4) { dice(6, 1) } },
+        position: rand(9) + 1,
+        order_index: 0,
+        position_index: 0,
         str: rand(20) + 1,
         slots: -> { Array.new(6) },
       }
@@ -25,6 +28,10 @@ module RpgModel
 
     def battle_unit(team_id)
       Battle::Unit.new self, team_id
+    end
+
+    def name_sample
+      File.read('player_names.txt').split(/\s/).sample
     end
   end
 end
