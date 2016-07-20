@@ -11,6 +11,10 @@ module RpgModel
       @user = @manager.user
     end
 
+    def game
+      user.create_game
+    end
+
     def unit_name(unit_id, name)
       user.units[unit_id].name = name
     end

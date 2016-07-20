@@ -2,7 +2,7 @@ require './lib/rpg_model/basic_model.rb'
 
 module RpgModel
   class User < BasicModel
-    attr_reader :units, :new_units
+    attr_reader :units, :new_units, :games
 
     def initialize(id, manager)
       super
@@ -12,13 +12,24 @@ module RpgModel
         trials: [],
       }
       default_params params
+      init_games
       init_units
       init_new_units
+    end
+
+    def init_games
+      @games = scope { Game.all @manager }
     end
 
     def init_units
       @units = scope { Unit.all @manager }
       13.times { create_unit } if @units.empty?
+    end
+
+    def create_game
+      e = scope { Game.create @manager }
+      e.save
+      @units[e.id] = e
     end
 
     def create_unit

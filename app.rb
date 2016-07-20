@@ -42,6 +42,16 @@ get '/battle' do
   haml :battle
 end
 
+get '/games' do
+  @games = @user.games
+  haml :games
+end
+
+get '/games/:id' do
+  @game = @user.games[params[:id]]
+  haml :games_show
+end
+
 get '/trials' do
   @trials = master[:trials].map {|name, e| RpgModel::Trial.new e }
   haml :trials
@@ -73,6 +83,11 @@ get '/units/:id/slots/:slot_idx' do
   @unit = @units[params[:id]]
   @slot_idx = params[:slot_idx]
   haml :units_slots
+end
+
+get '/api.game_create' do
+  api.game
+  redirect to "/games"
 end
 
 get '/api.unit_slot_set/:id/:slot_idx/:skill_idx' do
@@ -129,6 +144,7 @@ __END__
       GOLD: #{@user.gold}
     = link_to '/', 'home'
     = link_to '/units', 'units'
+    = link_to '/games', 'games'
     = link_to '/trials', 'trials'
     = link_to '/api.unit_recruit', 'recruit'
     = '--'
@@ -148,6 +164,19 @@ __END__
   = e
   %br
 
+@@ games
+%p
+  = link_to '/api.game_create', 'new game'
+- @games.each do |id, e|
+  = link_to "/games/#{e.id}", e.name
+  %br
+
+@@ games_show
+%p= @game.name
+%p= @game.logs
+
+@@ trials_battle
+= @trial.name
 @@ trials
 - @trials.each do |e|
   = link_to "/trials/#{e.name}", e.name
